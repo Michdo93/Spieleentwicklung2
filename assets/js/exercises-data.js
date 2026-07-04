@@ -39,7 +39,7 @@ const CHAPTERS = [
     status: "live" },
   { num: 9, slug: "uebung-09-sound-ui-server", title: "Sound, UI & Server", original: "Übung 9",
     desc: "Soundeffekte und Loops, native UI-Komponenten (Slider, Checkbox, ...), Kommunikation mit einem Server.",
-    status: "planned" },
+    status: "live" },
   { num: 10, slug: "movement-richtungssprites", title: "Richtungs-Sprites", original: "Movement",
     desc: "Ein Charakter mit vier Blickrichtungen, gesteuert per WASD/Pfeiltasten.",
     status: "planned" },

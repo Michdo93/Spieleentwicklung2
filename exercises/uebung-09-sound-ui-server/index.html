@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übung 9 · Sound, UI & Server — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Übung 9</div>
+    <span class="readout">ÜB·09</span>
+    <h1>Sound, UI & Server</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Drei für sich stehende Themen, die zu jeder echten Anwendung dazugehören:
+      fertige UI-Bausteine, Soundeffekte, und Kommunikation mit einem Server.
+      Original: <code>vl10.fla</code>, <code>vl10_2.fla</code>, <code>vl11.fla</code>.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>Flash-UI-Komponenten → native HTML-Formularelemente</h2>
+      <p>
+        Animate brachte fertige UI-Bausteine mit (Stepper, Button, CheckBox,
+        ColorPicker, Slider) — der Browser hat für praktisch jeden davon
+        eine eingebaute Entsprechung, meist sogar barrierefreier und ohne
+        zusätzlichen Code:
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>stepper_mc.addEventListener(
+  Event.CHANGE, getStep);
+colorPicker_mc.addEventListener(
+  ColorPickerEvent.CHANGE, getColor);
+slider_mc.addEventListener(
+  SliderEvent.CHANGE, getSlide);</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">HTML</span>
+          <pre><code>&lt;input type="number"&gt;
+&lt;input type="color"&gt;
+&lt;input type="range"&gt;
+// jeweils mit 'change'/'input'-Event</code></pre>
+        </div>
+      </div>
+
+      <h2>Sound: eingebettet vs. gestreamt</h2>
+      <p>
+        Das Original unterscheidet zwei Sound-Arten: ein in die Bibliothek
+        eingebetteter Sound-Effekt (<code>footstep</code>, als eigene Klasse
+        mit <code>extends Sound</code> exportiert) und ein von extern
+        gestreamter Loop (<code>SlowLoop.mp3</code>) mit
+        <code>SoundTransform</code> für die Lautstärke. Im Web verschwimmt
+        dieser Unterschied — beides ist einfach eine Audiodatei, geladen
+        über <code>new Audio()</code>.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>var sound = new footstep();
+sound.play();
+
+var sndLoop = new Sound(
+  new URLRequest("Sounds/SlowLoop.mp3"));
+var channel = sndLoop.play(0, 10);
+channel.soundTransform =
+  new SoundTransform(0.8, 0);</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>const footstep = new Audio(
+  "assets/footstep.mp3");
+footstep.play();
+
+const loop = new Audio(
+  "assets/SlowLoop.mp3");
+loop.loop = true;
+loop.volume = 0.8;
+loop.play();</code></pre>
+        </div>
+      </div>
+      <p>
+        Beide Audiodateien sind hier <strong>Original-Assets</strong> —
+        aus den FLA-Dateien extrahiert (sie lagen dort als eingebettete WAV
+        vor) und nach MP3 konvertiert.
+      </p>
+
+      <h2>Server-Kommunikation: URLLoader → fetch()</h2>
+      <p>
+        Das Original schickt Daten an einen eigenen PHP-Endpunkt auf dem
+        Hochschul-Webspace. Für eine portable, öffentlich lauffähige Demo
+        wurde hier ein öffentlicher Test-Server (<code>httpbin.org</code>)
+        eingesetzt, der Anfragen einfach zurück-echot — das Prinzip bleibt
+        exakt gleich.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>var variables = new URLVariables();
+variables["name"] = "Player1";
+
+var request = new URLRequest(
+  "https://.../server_communication.php");
+request.data = variables;
+
+var loader = new URLLoader();
+loader.addEventListener(
+  Event.COMPLETE, httpRequestComplete);
+loader.load(request);</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>const response = await fetch(
+  "https://httpbin.org/post", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name })
+  });
+const data = await response.json();</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        Demo 3 braucht eine Internetverbindung — der Test-Server ist
+        öffentlich und kann gelegentlich langsam antworten oder ausfallen,
+        das Prinzip (Daten senden, Antwort verarbeiten) bleibt aber sichtbar.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="demo-buttons">
+        <button class="btn ghost btn-active" data-demo="ui">1 · UI-Komponenten</button>
+        <button class="btn ghost" data-demo="sound">2 · Sound</button>
+        <button class="btn ghost" data-demo="server">3 · Server</button>
+      </div>
+      <p id="hint" class="controls-hint"></p>
+
+      <div id="panel-ui" class="panel">
+        <div class="ui-row"><label>Stepper</label><input id="ui-stepper" type="number" value="0" min="0" max="10"></div>
+        <div class="ui-row"><label>Button</label><button id="ui-button" class="btn ghost">Klick mich</button></div>
+        <div class="ui-row"><label>CheckBox</label><input id="ui-checkbox" type="checkbox"></div>
+        <div class="ui-row"><label>ColorPicker</label><input id="ui-colorpicker" type="color" value="#5fe0c9"></div>
+        <div class="ui-row"><label>Slider</label><input id="ui-slider" type="range" min="0" max="100" value="50"><span id="ui-slider-value">50</span></div>
+      </div>
+
+      <div id="panel-sound" class="panel">
+        <div class="sound-row">
+          <button id="play-footstep" class="btn ghost">Footstep abspielen</button>
+        </div>
+        <div class="sound-row">
+          <button id="toggle-loop" class="btn ghost">Loop abspielen</button>
+          <label style="font-family:var(--font-mono); font-size:0.85rem; color:var(--text-dim);">Lautstärke</label>
+          <input id="loop-volume" type="range" min="0" max="100" value="50">
+        </div>
+      </div>
+
+      <div id="panel-server" class="panel">
+        <form id="server-form">
+          <input id="server-name" type="text" placeholder="Name (z.B. Player1)">
+          <button type="submit" class="btn">Senden</button>
+        </form>
+        <p id="server-result"></p>
+      </div>
+
+      <div id="action-log-wrap">
+        <div id="action-log"></div>
+      </div>
+      <div class="stage-caption">
+        <span>uebung-09-sound-ui-server/exercise.js</span>
+        <span>3 Demos</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../uebung-08-plattformer-projekt/">← Übung 8 · Plattformer-Projekt</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

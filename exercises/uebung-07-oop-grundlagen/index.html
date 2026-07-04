@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übung 7 · OOP-Grundlagen — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Übung 7</div>
+    <span class="readout">ÜB·07</span>
+    <h1>OOP-Grundlagen</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Klassen, Konstruktoren, Vererbung und Pakete — die Grundlage für
+      saubere Spielearchitektur, ganz ohne Spiellogik erklärt. Original:
+      <code>Main.as</code>, <code>Test.as</code>, <code>Circle.as</code>.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>AS3-Klassen und ES6-Klassen: fast wortgleich</h2>
+      <p>
+        Das ist die gute Nachricht dieses Kapitels: AS3s Klassensyntax war
+        stark an ECMAScript angelehnt — moderne JavaScript-Klassen
+        (ES6) sehen fast identisch aus. Konstruktor, Vererbung,
+        <code>super()</code> — alles hat eine direkte Entsprechung.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>package {
+  import flash.display.MovieClip;
+
+  public class Test extends MovieClip {
+    public function Test() {
+      trace("I am test");
+      this.addEventListener(
+        Event.ENTER_FRAME, this.update);
+    }
+
+    public function update(_event: Event) {
+      this.x += 2;
+    }
+  }
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript (ES6)</span>
+          <pre><code>class Test {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    console.log("I am test");
+  }
+
+  update(dt) {
+    this.x += 90 * dt;
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <h2>Vererbung: <code>extends</code> heißt in beiden Sprachen <code>extends</code></h2>
+      <p>
+        <code>Circle extends Test</code> übernimmt automatisch
+        <code>update()</code> — die Bewegung muss nicht neu geschrieben
+        werden. Nur die Darstellung wird überschrieben (Kreis statt
+        Quadrat). Das ist der Kernvorteil von Vererbung: gemeinsames
+        Verhalten einmal definieren, spezialisiertes Verhalten in der
+        Unterklasse ergänzen.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>public class Circle extends Test {
+  public function Circle() {
+    trace("I am circle");
+  }
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>class Circle extends Test {
+  constructor(x, y, color) {
+    super(x, y, color);
+    console.log("I am circle");
+  }
+
+  draw(ctx) { /* Kreis statt Quadrat */ }
+}</code></pre>
+        </div>
+      </div>
+      <p>
+        Beachte die Reihenfolge im Ausgabe-Panel rechts: zuerst
+        <code>"I am root"</code> (Main wird erzeugt), dann für jede
+        <code>Circle</code>-Instanz <em>erst</em> <code>"I am test"</code>
+        (der Basisklassen-Konstruktor läuft zuerst) und <em>danach</em>
+        <code>"I am circle"</code> — <code>super()</code> muss in
+        JavaScript wie in AS3 aufgerufen werden, bevor der Rest des
+        Konstruktors ausgeführt wird.
+      </p>
+
+      <h2>Pakete: <code>package {}</code> vs. ES-Module</h2>
+      <p>
+        AS3 organisierte Klassen in <code>package</code>-Namespaces
+        (<code>package packages.main.hello { ... }</code>), aufgelöst über
+        den Ordnerpfad der Datei. Die moderne JavaScript-Entsprechung sind
+        ES-Module (<code>export class Circle { ... }</code> in einer
+        eigenen Datei, <code>import { Circle } from './Circle.js'</code>
+        anderswo) — dasselbe Ziel (Namensräume, Wiederverwendbarkeit über
+        Dateien hinweg), nur ohne den Umweg über eine Paket-Deklaration.
+        Für dieses kleine Demo reicht eine gemeinsame Datei, aber ab Übung 8
+        (dem großen Plattformer-Projekt) wird diese Aufteilung wichtig.
+      </p>
+
+      <div class="callout">
+        Rechts unten läuft ein Quadrat (<code>Test</code>) und ein Kreis
+        (<code>Circle</code>) über die Bühne — beide bewegen sich exakt
+        gleich, weil <code>Circle</code> die Bewegung von <code>Test</code>
+        erbt. "Neu erzeugen" im Ausgabe-Panel zeigt die Konstruktor-Reihenfolge erneut.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="stage-frame">
+        <canvas id="stage" width="420" height="200"></canvas>
+      </div>
+      <div id="action-log-wrap">
+        <div id="action-log"></div>
+      </div>
+      <button id="restart-btn" class="btn ghost">Neu erzeugen</button>
+      <div class="stage-caption">
+        <span>uebung-07-oop-grundlagen/exercise.js</span>
+        <span>420×200</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../uebung-06-schwerkraft-level/">← Übung 6 · Schwerkraft & Level</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

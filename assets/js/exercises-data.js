@@ -33,7 +33,7 @@ const CHAPTERS = [
     status: "live" },
   { num: 7, slug: "uebung-07-oop-grundlagen", title: "OOP-Grundlagen", original: "Übung 7",
     desc: "Klassen, Konstruktoren, Vererbung und Pakete — die Basis für saubere Spielearchitektur.",
-    status: "planned" },
+    status: "live" },
   { num: 8, slug: "uebung-08-plattformer-projekt", title: "Plattformer-Projekt", original: "Übung 8",
     desc: "Das Kursprojekt: komponentenbasierter Mini-Plattformer mit Münzen, Schwerkraft, Kollision und mehreren Charakteren.",
     status: "planned" },

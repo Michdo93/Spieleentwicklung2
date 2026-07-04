@@ -1,0 +1,26 @@
+#action-log-wrap {
+  margin-top: 12px;
+}
+#action-log {
+  background: #05070a;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--teal);
+  white-space: pre-wrap;
+  min-height: 70px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+#action-log::before {
+  content: "▸ Ausgabe (trace)";
+  display: block;
+  color: var(--text-faint);
+  margin-bottom: 6px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+#restart-btn { margin-top: 10px; }

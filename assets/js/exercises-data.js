@@ -21,7 +21,7 @@ const CHAPTERS = [
     status: "live" },
   { num: 3, slug: "uebung-03-event-listener", title: "Event-Listener & Zustände", original: "Übung 3",
     desc: "ENTER_FRAME-Transformationen (Position/Rotation/Skalierung) und zufällig ausgelöste Aktionen.",
-    status: "planned" },
+    status: "live" },
   { num: 4, slug: "uebung-04-eingabe-steuerung", title: "Eingabe & Charakter-Steuerung I", original: "Übung 4",
     desc: "Maus- und Tastatur-Events, mehrere unabhängige Charaktere mit eigenem Verhalten.",
     status: "planned" },

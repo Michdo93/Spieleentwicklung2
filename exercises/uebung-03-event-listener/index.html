@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übung 3 · Event-Listener & Zustände — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Übung 3</div>
+    <span class="readout">ÜB·03</span>
+    <h1>Event-Listener & Zustände</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Erstmals steuert Code die Figur aus Übung 2 — zunächst nur per Zufall,
+      aber das ist der erste Schritt weg von reiner Handanimation. Original:
+      <code>eventListener.fla</code>, <code>uebung3.fla</code>.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>ENTER_FRAME: der Herzschlag jeder Animate-Anwendung</h2>
+      <p>
+        <code>Event.ENTER_FRAME</code> ist das AS3-Äquivalent zu
+        <code>requestAnimationFrame</code> — eine Funktion, die bei jedem
+        gezeichneten Bild erneut aufgerufen wird. Demo 1 zeigt das in
+        Reinform: ein Quadrat, dessen Position, Rotation und Skalierung sich
+        jeden Frame ein kleines Stück ändern.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>this.addEventListener(
+  Event.ENTER_FRAME, update);
+
+function update(_event: Event) {
+  square_mc.x += 5;
+  square_mc.rotation += 30;
+
+  if(square_mc.rotation == 180) {
+    square_mc.scaleX -=
+      square_mc.scaleX/10;
+    square_mc.scaleY -=
+      square_mc.scaleY/10;
+  }
+
+  if(square_mc.x > stage.stageWidth
+      + square_mc.width/2) {
+    square_mc.x =
+      -square_mc.width/2;
+  }
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>function frame() {
+  x += 2.2;
+  rotation += 13;
+
+  if (rotation &gt;= 180
+      && rotation &lt; 193) {
+    scale -= scale/10;
+  }
+
+  if (x &gt; W + 30) x = -30;
+
+  requestAnimationFrame(frame);
+}</code></pre>
+        </div>
+      </div>
+      <p>
+        Ein Detail lohnt sich hervorzuheben: Das Original prüft
+        <code>rotation == 180</code> — das trifft nur exakt einmal, weil
+        die Rotation in 30°-Schritten springt (0, 30, 60, … 180, 210, …).
+        Bei unserer Framerate mit krummeren Schritten würde ein exakter
+        Vergleich fast nie zutreffen — deshalb wird hier stattdessen ein
+        kleines Intervall (<code>rotation &gt;= 180 &amp;&amp; rotation &lt; 193</code>)
+        geprüft. Ein kleines, aber lehrreiches Detail beim Übergang von
+        diskreten zu kontinuierlichen Frame-Schritten.
+      </p>
+
+      <h2>Die Figur bekommt ihre erste Steuerung — per Zufall</h2>
+      <p>
+        <code>uebung3.fla</code> lässt unsere Charakterfigur (Übung 2)
+        erstmals von Code statt von Buttons steuern: alle paar Sekunden
+        entscheidet <code>Math.random()</code>, ob sie läuft (70%
+        Wahrscheinlichkeit), steht (20%) oder springt (10%). Das ist noch
+        keine Spielsteuerung — aber es ist der erste Schritt, bei dem eine
+        Zeile Code statt eines Klicks eine Animation auswählt.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>var random = Math.random();
+
+if(random &lt;= 0.7) {
+  charakter_mc.doAction("walk");
+}
+if(random &gt; 0.7 && random &lt;= 0.9) {
+  charakter_mc.doAction("idle");
+}
+if(random &gt; 0.9 && random &lt;= 1) {
+  charakter_mc.doAction("jump");
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>const random = Math.random();
+let action;
+if (random &lt;= 0.7) action = "walk";
+else if (random &lt;= 0.9) action = "idle";
+else action = "jump";
+rig.doAction(action);</code></pre>
+        </div>
+      </div>
+      <p>
+        <code>doAction()</code> selbst wurde ebenfalls unverändert
+        übernommen: es wechselt den Zustand nur, wenn er sich tatsächlich
+        ändert (<code>if (this.currentAnimation !== action)</code>) — sonst
+        würde ein wiederholtes "walk" die Laufanimation ständig neu starten.
+      </p>
+
+      <div class="callout">
+        Bei Demo 2 rechts unten das Ausgabe-Panel beobachten — dort steht,
+        welcher Zufallswert zu welcher Aktion geführt hat.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="demo-buttons">
+        <button class="btn ghost btn-active" data-demo="transform">1 · ENTER_FRAME-Transformation</button>
+        <button class="btn ghost" data-demo="random">2 · Zufalls-doAction()</button>
+      </div>
+      <div class="stage-frame">
+        <canvas id="stage" width="480" height="300"></canvas>
+      </div>
+      <p id="hint" class="controls-hint"></p>
+      <div id="action-log-wrap">
+        <div id="action-log"></div>
+      </div>
+      <div class="stage-caption">
+        <span>uebung-03-event-listener/exercise.js</span>
+        <span>480×300</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../uebung-02-charakter-rig/">← Übung 2 · Charakter-Rig</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

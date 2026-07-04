@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übung 5 · Kollision & Charakter-Auswahl — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Übung 5</div>
+    <span class="readout">ÜB·05</span>
+    <h1>Kollision & Charakter-Auswahl</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Erst die Grundlage jeder Kollisionserkennung, dann der große Schritt:
+      Charaktere per Klick auswählen und gezielt mit der Tastatur steuern
+      — über ein Event-Registrierungsmuster statt direkter Referenzen.
+      Original: <code>vl6.fla</code>, <code>uebung5_neu.fla</code>.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>hitTestObject(): Rechteck- oder Kreis-Überlappung</h2>
+      <p>
+        <code>vl6.fla</code> ist denkbar einfach: Ein Kreis folgt der Maus,
+        ein zweiter steht fest, <code>hitTestObject()</code> prüft die
+        Überlappung. Da Flashs <code>hitTestObject()</code> intern auf den
+        Bounding-Boxen arbeitet, für zwei Kreise aber ein Abstandstest
+        genauer ist, nutzt die Portierung direkt
+        <code>Math.hypot()</code> gegen die Summe beider Radien — dasselbe
+        Ergebnis, nur präziser für runde Formen.
+      </p>
+
+      <h2>Vom "alle machen etwas" zum "einer wird gesteuert"</h2>
+      <p>
+        Der eigentliche Sprung in diesem Kapitel: Bisher liefen alle
+        Charaktere gleichzeitig mit eigenem Zufallsverhalten (Übung 3/4).
+        Jetzt kann <strong>genau ein</strong> Charakter pro Zeitpunkt
+        ausgewählt und mit der Tastatur gesteuert werden — alle anderen
+        warten im Idle-Zustand.
+      </p>
+      <p>
+        Technisch spannend: Das Original löst die Auswahl nicht über eine
+        direkte Referenz ("Hauptobjekt kennt Charakter X"), sondern über
+        <strong>Events, die nach oben durchgereicht werden</strong>
+        (<code>dispatchEvent(new Event("registerCharacter", true))</code>
+        mit <code>bubbles = true</code>). Jeder Charakter meldet sich beim
+        Erzeugen selbst an, jeder Klick meldet sich selbst als "ausgewählt".
+        Die Web-Entsprechung: ein gemeinsamer <code>EventTarget</code> als
+        "Bus", auf dem alle Charaktere Events senden und ein zentraler
+        Listener reagiert.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>function init() {
+  var evt = new Event(
+    "registerCharacter", true);
+  dispatchEvent(evt);
+}
+
+function clicked(_event) {
+  var evt = new Event(
+    "characterClicked", true);
+  dispatchEvent(evt);
+}
+
+// im Root:
+stage.addEventListener(
+  "registerCharacter",
+  registerCharacter);</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>// im Charakter-Konstruktor:
+this.bus.dispatchEvent(
+  new CustomEvent(
+    "registerCharacter",
+    { detail: this }));
+
+// im zentralen Listener:
+bus.addEventListener(
+  "registerCharacter",
+  e =&gt; characters.push(e.detail));</code></pre>
+        </div>
+      </div>
+      <p>
+        Dieses Muster hat einen echten Vorteil: Der Charakter muss nichts
+        über seine Umgebung wissen — er meldet sich einfach an und
+        kommuniziert über Events. Genau dieses Prinzip zieht sich durch den
+        Rest des Kurses (Übung 6 und 8 fügen genauso "Level-Elemente" und
+        "Münzen" per Event-Registrierung hinzu).
+      </p>
+
+      <h2>Nur der Sprung läuft ungestört durch</h2>
+      <p>
+        Wichtiges Detail aus dem Original: Während des Sprungs
+        (<code>state = "playing"</code>) unterbricht kein anderer
+        Tastendruck die Animation, bis sie fertig ist
+        (<code>state = "stopped"</code>). Das verhindert, dass ein Sprung
+        durch schnelles Tastendrücken "abgeschnitten" wird — auch in dieser
+        Portierung reagiert das Springen erst nach Ablauf seiner Dauer
+        wieder auf neue Eingaben.
+      </p>
+
+      <div class="callout">
+        Bei Demo 2 einen der drei Charaktere anklicken (er bekommt einen
+        gestrichelten Auswahlring), dann mit <kbd>←</kbd>/<kbd>→</kbd>/<kbd>Space</kbd>
+        steuern. Ein Klick auf einen anderen Charakter wechselt die Auswahl.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="demo-buttons">
+        <button class="btn ghost btn-active" data-demo="hittest">1 · hitTestObject()</button>
+        <button class="btn ghost" data-demo="selection">2 · Charakter-Auswahl</button>
+      </div>
+      <div class="stage-frame">
+        <canvas id="stage" width="480" height="280" tabindex="0"></canvas>
+      </div>
+      <p id="hint" class="controls-hint"></p>
+      <div class="stage-caption">
+        <span>uebung-05-kollision-auswahl/exercise.js</span>
+        <span>480×280</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../uebung-04-eingabe-steuerung/">← Übung 4 · Eingabe & Steuerung</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

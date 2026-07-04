@@ -27,7 +27,7 @@ const CHAPTERS = [
     status: "live" },
   { num: 5, slug: "uebung-05-kollision-auswahl", title: "Kollision & Charakter-Auswahl", original: "Übung 5",
     desc: "hitTestObject-Kollision, Charakter per Klick auswählen und mit der Tastatur steuern.",
-    status: "planned" },
+    status: "live" },
   { num: 6, slug: "uebung-06-schwerkraft-level", title: "Schwerkraft & Level-Kollision", original: "Übung 6",
     desc: "Prallphysik, Grid-Interaktion, und Level-Bausteine (Collider/LevelBox) für echte Bodenkollision.",
     status: "planned" },

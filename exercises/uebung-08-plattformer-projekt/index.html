@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übung 8 · Plattformer-Projekt — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Übung 8</div>
+    <span class="readout">ÜB·08</span>
+    <h1>Plattformer-Projekt</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Das Kursprojekt: alles aus den vorigen Übungen kommt hier zusammen —
+      plus fallende Münzen und eine Punkteanzeige. Original:
+      <code>Main.as</code>, <code>CharacterController.as</code>,
+      <code>CharacterAnimationController.as</code>, <code>CoinController.as</code>,
+      <code>Collider.as</code>/<code>LevelBox.as</code>/<code>LevelStage.as</code>.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>Fünf Klassen, eine klare Verantwortung pro Klasse</h2>
+      <p>
+        Das Original teilt das Projekt sauber auf, genau wie es Übung 7
+        vorbereitet hat:
+      </p>
+      <ul>
+        <li><strong>Main</strong> — Spielleitung: erzeugt Charaktere und
+          Münzen, hält Punktestand und Tastatur-Zustand</li>
+        <li><strong>CharacterController</strong> — Position, Bewegung,
+          Schwerkraft, Level-/Münz-Kollision</li>
+        <li><strong>CharacterAnimationController</strong> — reine
+          Zustandsmaschine (Idle/Walk/Jump), kennt nichts von Physik</li>
+        <li><strong>CoinController</strong> — fällt mit Schwerkraft,
+          landet auf Plattformen, kann eingesammelt werden</li>
+        <li><strong>Collider/LevelBox/LevelStage</strong> — melden
+          Plattformen beim Spiel an</li>
+      </ul>
+      <p>
+        Diese Aufteilung wurde 1:1 in JS-Klassen übernommen — jede Klasse
+        hat exakt dieselbe Verantwortung wie ihr AS3-Original.
+      </p>
+
+      <h2>Was neu dazukommt: Münzen mit eigener Physik</h2>
+      <p>
+        <code>CoinController</code> ist im Kern ein kleiner Cousin von
+        <code>CharacterController</code>: dieselbe Schwerkraft, dieselbe
+        Landungs-Erkennung gegen Level-Plattformen — nur ohne Steuerung.
+        Einsammeln funktioniert über einen einfachen Abstandstest im
+        Charakter-Update, <strong>jeder</strong> Charakter kann Münzen
+        einsammeln, nicht nur der gerade ausgewählte.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>public function checkCoins() {
+  for (var i=0; i&lt;coins.length; i++) {
+    if (this.hitTestObject(
+        coins[i] as MovieClip)) {
+      // Münze entfernen,
+      // Main(parent).countedCoins++;
+      return true;
+    }
+  }
+  return false;
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>checkCoins(coins) {
+  for (const c of coins) {
+    if (c.collected) continue;
+    if (Math.hypot(
+        this.x - c.x,
+        this.y - 30 - c.y) &lt; 26) {
+      c.collected = true;
+      this.game.addScore(1);
+    }
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <h2>Alles über denselben Event-Bus verbunden</h2>
+      <p>
+        Charaktere, Münzen und Plattformen kennen sich alle nicht direkt —
+        sie melden sich beim gemeinsamen <code>Game.bus</code> an
+        (<code>registerCharacter</code>, <code>registerCoin</code>,
+        <code>registerLevelElement</code>), genau wie in Übung 5/6. Das
+        zahlt sich hier aus: Neue Objekttypen (Münzen) hinzuzufügen brauchte
+        keine einzige Änderung an bestehendem Code — nur eine neue Klasse
+        und ein neuer Event-Name.
+      </p>
+
+      <div class="callout">
+        Einen der drei Charaktere anklicken, mit <kbd>←</kbd>/<kbd>→</kbd>/<kbd>Space</kbd>
+        steuern, alle 10 Münzen einsammeln, um zu gewinnen. Münzen fallen
+        von oben und landen selbstständig auf den Plattformen.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="stage-frame">
+        <canvas id="stage" width="560" height="320" tabindex="0"></canvas>
+        <div id="overlay" class="game-overlay">
+          <p id="overlay-text">3 Charaktere, 10 fallende Münzen. Sammle alle ein!</p>
+          <button id="start-btn" class="btn">Spiel starten</button>
+        </div>
+      </div>
+      <div class="stage-hud">
+        <span id="hud-score">Coins: 0 / 10</span>
+      </div>
+      <div class="stage-caption">
+        <span>uebung-08-plattformer-projekt/exercise.js</span>
+        <span>560×320</span>
+      </div>
+      <p class="controls-hint">Charakter anklicken zum Auswählen · <kbd>←</kbd> <kbd>→</kbd> laufen · <kbd>Space</kbd> springt</p>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../uebung-07-oop-grundlagen/">← Übung 7 · OOP-Grundlagen</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

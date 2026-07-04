@@ -36,7 +36,7 @@ const CHAPTERS = [
     status: "live" },
   { num: 8, slug: "uebung-08-plattformer-projekt", title: "Plattformer-Projekt", original: "Übung 8",
     desc: "Das Kursprojekt: komponentenbasierter Mini-Plattformer mit Münzen, Schwerkraft, Kollision und mehreren Charakteren.",
-    status: "planned" },
+    status: "live" },
   { num: 9, slug: "uebung-09-sound-ui-server", title: "Sound, UI & Server", original: "Übung 9",
     desc: "Soundeffekte und Loops, native UI-Komponenten (Slider, Checkbox, ...), Kommunikation mit einem Server.",
     status: "planned" },

@@ -42,7 +42,7 @@ const CHAPTERS = [
     status: "live" },
   { num: 10, slug: "movement-richtungssprites", title: "Richtungs-Sprites", original: "Movement",
     desc: "Ein Charakter mit vier Blickrichtungen, gesteuert per WASD/Pfeiltasten.",
-    status: "planned" },
+    status: "live" },
 ];
 
 if (typeof module !== "undefined") module.exports = { CHAPTERS };

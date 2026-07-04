@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movement · Richtungs-Sprites — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Movement</div>
+    <span class="readout">ÜB·10</span>
+    <h1>Richtungs-Sprites</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Das letzte und kompakteste Beispiel im Kurs: eine Figur, die pro
+      Tastendruck ihre Position <em>und</em> ihre Blickrichtung ändert —
+      ganz ohne Game-Loop. Original: <code>movement.fla</code> +
+      <code>ninja_front/back/left/right.swf</code>.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>Kein ENTER_FRAME nötig — Bewegung direkt im Event</h2>
+      <p>
+        Anders als fast jede andere Übung in diesem Kurs kommt
+        <code>movement.fla</code> komplett ohne Game-Loop aus: Bewegung
+        und Richtungswechsel passieren direkt innerhalb des
+        <code>KeyboardEvent.KEY_DOWN</code>-Handlers. Jeder Tastendruck
+        verschiebt die Figur um einen festen Betrag und wechselt sofort
+        das passende Sprite.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>function keyDown(_event) {
+  switch(_event.keyCode) {
+    case Keyboard.LEFT:
+    case Keyboard.A:
+      character_mc.x -= 5;
+      character_mc.gotoAndStop("left");
+      break;
+    // ... right, up, down
+  }
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>function keyDown(e) {
+  const dir = map[e.key];
+  if (dir === "left") character.x -= STEP;
+  // ... right, back, front
+  character.direction = dir;
+  render();
+}</code></pre>
+        </div>
+      </div>
+      <p>
+        Das hat einen sichtbaren Effekt: Die Bewegung ist an die
+        Wiederholrate der Tastatur gekoppelt (also an das Betriebssystem),
+        nicht an die Bildwiederholrate. Ein guter Kontrast zu praktisch
+        jeder anderen Übung in diesem Kurs, die zeitbasiert pro Frame
+        bewegt — manchmal ist "so einfach wie möglich" genau richtig,
+        besonders für ein Demo dieser Größe.
+      </p>
+
+      <h2>Vier Sprites statt einer Rotation</h2>
+      <p>
+        Statt die Figur zu drehen (wie es <code>rotation</code> könnte),
+        tauscht das Original komplett das Sprite aus —
+        <code>gotoAndStop("left"/"right"/"up"/"down")</code> zeigt vier
+        völlig unterschiedlich gezeichnete Frames. Das ist der klassische
+        Ansatz für Top-Down-Spiele mit gerichteten Charakteren (Zelda-Stil):
+        vier (oder acht) fest gezeichnete Blickrichtungen statt einer frei
+        rotierenden Figur.
+      </p>
+
+      <h2>Eigene Grafiken statt Original-Sprites</h2>
+      <p>
+        Die vier <code>ninja_*.swf</code>-Dateien waren winzige, im
+        Animate-Editor gezeichnete Vektorformen ohne extrahierbare
+        Bilddaten (ähnlich wie schon bei den Dreiecks-Grafiken im
+        Buch-Projekt) — hier ersetzt durch vier selbst gezeichnete
+        Blickrichtungen (Augen sichtbar von vorne, Profil-Andeutung seitlich,
+        Haarwirbel von hinten).
+      </p>
+
+      <div class="callout">
+        <kbd>WASD</kbd> oder Pfeiltasten drücken — jeder Tastendruck bewegt
+        die Figur um 5 Pixel und wechselt sofort die Blickrichtung.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="stage-frame">
+        <canvas id="stage" width="420" height="300" tabindex="0"></canvas>
+      </div>
+      <p id="hint" class="controls-hint"></p>
+      <div class="stage-hud">
+        <span id="hud-pos">x=210 y=150 Richtung=front</span>
+      </div>
+      <div class="stage-caption">
+        <span>movement-richtungssprites/exercise.js</span>
+        <span>420×300</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../uebung-09-sound-ui-server/">← Übung 9 · Sound, UI & Server</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

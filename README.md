@@ -9,7 +9,7 @@ GitHub Pages.
 Frame-Animation bis zum fertigen, komponentenbasierten Mini-Plattformer —
 nur eben mit Web-Technik statt Animate/Flash.
 
-▶ **[Alle Übungen ansehen](./index.html)**
+▶ **[Alle Übungen ansehen](./index.html)** — 🎉 **alle 10 Übungen des Kurses sind vollständig portiert.**
 
 ## Wie das Repo aufgebaut ist
 

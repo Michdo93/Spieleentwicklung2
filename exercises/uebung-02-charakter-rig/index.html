@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übung 2 · Charakter-Rig bauen — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Übung 2</div>
+    <span class="readout">ÜB·02</span>
+    <h1>Charakter-Rig bauen</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Eine Figur aus Einzelteilen zusammensetzen und drei Zustände geben:
+      Idle, Walk, Jump. Diese Figur ist die Basis für praktisch den gesamten
+      restlichen Kurs. Original: <code>Charakter.fla</code> — reines Rigging,
+      kein einziger Zeile Code.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>Verschachtelte Symbole → Objekt mit Einzelteilen</h2>
+      <p>
+        Im Original ist die Figur eine Hierarchie verschachtelter
+        MovieClips: <code>Figur</code> enthält <code>Body</code>,
+        <code>Neck</code> (→ Kopf), <code>Shoulder_Left/Right</code>
+        (Oberarme), die wiederum <code>Forearm_Left/Right</code> (Unterarme)
+        und <code>Hand</code> enthalten, plus zwei <code>Leg</code>-Symbole.
+        Jedes Teil hat seinen eigenen Drehpunkt (registration point) — dreht
+        man die Schulter, dreht sich der ganze Arm mit, ohne dass man Ober-
+        und Unterarm getrennt bewegen muss.
+      </p>
+      <p>
+        Die Web-Entsprechung: ein <code>CharacterRig</code>-Objekt mit einem
+        <code>pose</code>-Datensatz, der für jedes Körperteil einen eigenen
+        Winkel trägt. Beim Zeichnen wird das genau nachgebaut — Canvas'
+        <code>translate()</code> + <code>rotate()</code> vor jedem Segment
+        entspricht exakt dem verschachtelten Drehpunkt-Prinzip:
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">Animate (verschachtelte Symbole)</span>
+          <pre><code>Figur
+ └─ Shoulder_Left (eigener Drehpunkt)
+     └─ Forearm_Left (eigener Drehpunkt)
+         └─ Hand</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript (verschachtelte Transforms)</span>
+          <pre><code>ctx.translate(shoulderX, shoulderY);
+ctx.rotate(shoulderAngle);
+// Oberarm zeichnen
+ctx.translate(0, armLength);
+ctx.rotate(forearmAngle);
+// Unterarm + Hand zeichnen</code></pre>
+        </div>
+      </div>
+
+      <h2>Von Hand gebaute Keyframes → Sinusfunktionen</h2>
+      <p>
+        Im Original wurden die drei Bewegungsabläufe (Idle/Walk/Jump) mit
+        vielen einzelnen Keyframes von Hand animiert. Für die Portierung
+        reicht oft eine einzige Sinusfunktion pro Körperteil — der
+        Walk-Zyklus zum Beispiel schwingt Arme und Beine gegenläufig, exakt
+        das, was <code>Math.sin(t * geschwindigkeit)</code> von Natur aus
+        liefert.
+      </p>
+
+      <h2>Der Sprung: eine einmalige Kurve statt einer Schleife</h2>
+      <p>
+        Idle und Walk laufen endlos in einer Schleife — der Sprung dagegen
+        ist eine <strong>einmalige</strong> Bewegung, die danach zu Idle
+        zurückkehrt. Das entspricht exakt der später (Übung 5) eingeführten
+        Unterscheidung zwischen <code>state = "playing"</code> (Sprung läuft)
+        und <code>state = "stopped"</code> — hier schon als
+        <code>jumpDoneCallback</code> vorwegnehmend eingebaut.
+      </p>
+
+      <div class="callout">
+        Zwischen Idle/Walk/Jump wechseln und beobachten, wie sich Arme und
+        Beine bewegen. Diese Figur wird ab Übung 3 mit echter Steuerung
+        (Tastatur, Kollision, Level) ausgestattet.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="demo-buttons">
+        <button class="btn ghost btn-active" data-state="idle">Idle</button>
+        <button class="btn ghost" data-state="walk">Walk</button>
+        <button class="btn ghost" data-state="jump">Jump</button>
+      </div>
+      <div class="stage-frame">
+        <canvas id="stage" width="420" height="320"></canvas>
+      </div>
+      <p id="hint" class="controls-hint"></p>
+      <div class="stage-caption">
+        <span>uebung-02-charakter-rig/exercise.js</span>
+        <span>420×320</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../uebung-01-animation-grundlagen/">← Übung 1 · Animation-Grundlagen</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

@@ -18,7 +18,7 @@ const CHAPTERS = [
     status: "live" },
   { num: 2, slug: "uebung-02-charakter-rig", title: "Charakter-Rig bauen", original: "Übung 2",
     desc: "Eine Figur aus Einzelteilen (Kopf, Rumpf, Arme, Beine) mit Idle/Walk/Jump-Zyklen — die Basis für den Rest des Kurses.",
-    status: "planned" },
+    status: "live" },
   { num: 3, slug: "uebung-03-event-listener", title: "Event-Listener & Zustände", original: "Übung 3",
     desc: "ENTER_FRAME-Transformationen (Position/Rotation/Skalierung) und zufällig ausgelöste Aktionen.",
     status: "planned" },

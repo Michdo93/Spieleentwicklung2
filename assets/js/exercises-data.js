@@ -24,7 +24,7 @@ const CHAPTERS = [
     status: "live" },
   { num: 4, slug: "uebung-04-eingabe-steuerung", title: "Eingabe & Charakter-Steuerung I", original: "Übung 4",
     desc: "Maus- und Tastatur-Events, mehrere unabhängige Charaktere mit eigenem Verhalten.",
-    status: "planned" },
+    status: "live" },
   { num: 5, slug: "uebung-05-kollision-auswahl", title: "Kollision & Charakter-Auswahl", original: "Übung 5",
     desc: "hitTestObject-Kollision, Charakter per Klick auswählen und mit der Tastatur steuern.",
     status: "planned" },

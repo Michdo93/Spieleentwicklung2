@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übung 4 · Eingabe & Charakter-Steuerung I — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Übung 4</div>
+    <span class="readout">ÜB·04</span>
+    <h1>Eingabe & Charakter-Steuerung I</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Maus- und Tastatur-Grundlagen, dann fünf unabhängige Charaktere, die
+      sich jetzt wirklich über die Bühne bewegen — und deren Animationen
+      ihr eigenes Ende selbst zurückmelden. Original: <code>vl05.fla</code>,
+      <code>uebung4.fla</code>.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>Maus- und Tastatur-Events: die Grundbausteine</h2>
+      <p>
+        <code>vl05.fla</code> zeigt beide Eingabearten nebeneinander:
+        <code>MouseEvent.CLICK</code> auf ein Objekt, und
+        <code>KeyboardEvent.KEY_DOWN</code> mit einem <code>switch</code>
+        über <code>Keyboard.LEFT/RIGHT/UP/DOWN</code> (plus WASD als
+        Alternative). Beides übersetzt sich nahezu wörtlich:
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>rect_mc.addEventListener(
+  MouseEvent.CLICK, clicked);
+
+stage.addEventListener(
+  KeyboardEvent.KEY_DOWN, keyDown);
+
+function keyDown(_event) {
+  switch(_event.keyCode) {
+    case Keyboard.UP:
+    case Keyboard.W:
+      trace("^");
+      break;
+    // ...
+  }
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>canvas.addEventListener(
+  'click', clicked);
+
+window.addEventListener(
+  'keydown', onKey);
+
+function onKey(e) {
+  const map = {
+    ArrowUp: '^', w: '^', /* ... */
+  };
+  if (map[e.key]) trace(map[e.key]);
+}</code></pre>
+        </div>
+      </div>
+
+      <h2>Vom Zufallstimer zur selbstmeldenden Animation</h2>
+      <p>
+        In Übung 3 entschied ein festes Zeitintervall, wann die nächste
+        Zufallsaktion kommt. Hier ist es anders: Jede Animation
+        (Idle/Walk/Jump) hat eine eigene Dauer, und <strong>wenn sie zu
+        Ende ist, löst sie selbst die nächste Zufallsauswahl aus</strong> —
+        im Original, indem die letzte Frame der Zeitleisten-Animation
+        <code>MovieClip(this.parent).doNewAction()</code> aufruft.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3 (Ende der Walk-Animation)</span>
+          <pre><code>stop();
+trace(name + " walk done");
+MovieClip(this.parent)
+  .doNewAction();</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript (im Update-Loop)</span>
+          <pre><code>if (this.t >= this.duration) {
+  this.doNewAction();
+}</code></pre>
+        </div>
+      </div>
+
+      <h2>Bewegung hängt vom Animationszustand ab</h2>
+      <p>
+        Wichtiges Detail aus <code>CharakterControl.xml</code>: Beim Laufen
+        bewegt sich die Figur mit voller Geschwindigkeit, beim Springen nur
+        mit der Hälfte, beim Stehen gar nicht. Bewegung und Animation sind
+        also zwei getrennte, aber aufeinander abgestimmte Systeme —
+        <code>moveHorizontal()</code> kümmert sich nur um Position und
+        Randerkennung, welche Geschwindigkeit dabei gilt, entscheidet der
+        aktuelle Animationszustand.
+      </p>
+
+      <div class="callout">
+        Bei Demo 2 laufen fünf Charaktere unabhängig voneinander — jeder mit
+        eigenem Rhythmus zwischen Laufen, Stehen und Springen, jeder prallt
+        eigenständig an den Bildschirmrändern ab.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="demo-buttons">
+        <button class="btn ghost btn-active" data-demo="input">1 · Maus & Tastatur</button>
+        <button class="btn ghost" data-demo="characters">2 · Fünf Charaktere</button>
+      </div>
+      <div class="stage-frame">
+        <canvas id="stage" width="560" height="280" tabindex="0"></canvas>
+      </div>
+      <p id="hint" class="controls-hint"></p>
+      <div id="action-log-wrap">
+        <div id="action-log"></div>
+      </div>
+      <div class="stage-caption">
+        <span>uebung-04-eingabe-steuerung/exercise.js</span>
+        <span>560×280</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../uebung-03-event-listener/">← Übung 3 · Event-Listener</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

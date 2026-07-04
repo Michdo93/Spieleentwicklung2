@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übung 6 · Schwerkraft & Level-Kollision — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Übung 6</div>
+    <span class="readout">ÜB·06</span>
+    <h1>Schwerkraft & Level-Kollision</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Drei Bausteine: Schwerkraft mit Abprallen, Raster-Interaktion, und
+      die Charakter-Auswahl aus Übung 5 mit echter Plattform-Kollision.
+      Original: <code>vl7.fla</code>, <code>vl7_2.fla</code>, <code>uebung6.fla</code>.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>Schwerkraft: eine Zeile, die alles verändert</h2>
+      <p>
+        <code>vl7.fla</code> zeigt Schwerkraft in ihrer einfachsten Form:
+        <code>deltaY += 1</code> pro Frame, addiert auf die Y-Position.
+        Trifft das Objekt eine Plattform, wird <code>deltaY</code> auf
+        einen negativen Wert zurückgesetzt — es prallt ab.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>function update(_event: Event) {
+  this.y += deltaY;
+  deltaY += 1;
+
+  for(var i=0; i&lt;level.numChildren; i++) {
+    var hit = this.hitTestObject(
+      level.getChildAt(i));
+    if(hit) {
+      deltaY = -10; // bouncing
+    }
+  }
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>rect.deltaY += 1;
+rect.y += rect.deltaY;
+
+level.forEach(l =&gt; {
+  const hit = /* AABB-Test */;
+  if (hit &amp;&amp; rect.deltaY &gt; 0) {
+    rect.deltaY = -10;
+    rect.y = l.y - rect.h;
+  }
+});</code></pre>
+        </div>
+      </div>
+
+      <h2>Raster-Interaktion: Klick entfernt ein Element</h2>
+      <p>
+        <code>vl7_2.fla</code> erzeugt ein 10×10-Raster aus Rechtecken und
+        entfernt bei Klick genau das getroffene Element — ein einfaches,
+        aber wichtiges Muster für alles von Gitterspielen bis zu
+        Inventar-Systemen.
+      </p>
+
+      <h2>Von der Rechteck-Kollision zur Level-Registrierung</h2>
+      <p>
+        <code>uebung6.fla</code> baut auf Übung 5 auf und fügt echte
+        Boden-/Plattform-Kollision hinzu — über dieselbe
+        Event-Registrierungskette wie schon bei den Charakteren:
+        <code>Collider</code>/<code>LevelBox</code>-Objekte melden sich per
+        <code>RegisterCollider</code>-Event an, <code>LevelStage</code>
+        reicht das als <code>RegisterLevelElement</code> weiter nach oben.
+        Der Charakter-Controller sammelt alle registrierten Elemente und
+        prüft bei jedem Frame, ob sein "Fußpunkt" eines davon berührt.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>// LevelBox meldet sich an:
+this.dispatchEvent(
+  new Event("RegisterCollider", true));
+
+// LevelStage reicht weiter:
+function registerCollider(_event) {
+  _event.target.dispatchEvent(
+    new Event(
+      "RegisterLevelElement", true));
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>// LevelPlatform meldet sich an:
+bus.dispatchEvent(
+  new CustomEvent(
+    "RegisterLevelElement",
+    { detail: this }));
+
+// zentraler Listener sammelt:
+bus.addEventListener(
+  "RegisterLevelElement",
+  e =&gt; level.push(e.detail));</code></pre>
+        </div>
+      </div>
+      <p>
+        Der Vorteil bleibt derselbe wie in Übung 5: Ein Level kann beliebig
+        viele Plattformen haben, ohne dass der Charakter-Code sie einzeln
+        kennen muss — er fragt einfach "welche registrierten Elemente
+        berühre ich gerade".
+      </p>
+
+      <div class="callout">
+        Bei Demo 3 einen Charakter anklicken, dann mit <kbd>←</kbd>/<kbd>→</kbd>
+        über die Plattformen laufen und mit <kbd>Space</kbd> springen — nur
+        möglich, während er auf dem Boden steht.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="demo-buttons">
+        <button class="btn ghost btn-active" data-demo="bounce">1 · Schwerkraft & Abprallen</button>
+        <button class="btn ghost" data-demo="grid">2 · Raster-Klick</button>
+        <button class="btn ghost" data-demo="level">3 · Level-Kollision</button>
+      </div>
+      <div class="stage-frame">
+        <canvas id="stage" width="560" height="300" tabindex="0"></canvas>
+      </div>
+      <p id="hint" class="controls-hint"></p>
+      <div class="stage-caption">
+        <span>uebung-06-schwerkraft-level/exercise.js</span>
+        <span>560×300</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../uebung-05-kollision-auswahl/">← Übung 5 · Kollision & Auswahl</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

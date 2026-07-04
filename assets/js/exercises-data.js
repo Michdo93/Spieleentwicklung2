@@ -30,7 +30,7 @@ const CHAPTERS = [
     status: "live" },
   { num: 6, slug: "uebung-06-schwerkraft-level", title: "Schwerkraft & Level-Kollision", original: "Übung 6",
     desc: "Prallphysik, Grid-Interaktion, und Level-Bausteine (Collider/LevelBox) für echte Bodenkollision.",
-    status: "planned" },
+    status: "live" },
   { num: 7, slug: "uebung-07-oop-grundlagen", title: "OOP-Grundlagen", original: "Übung 7",
     desc: "Klassen, Konstruktoren, Vererbung und Pakete — die Basis für saubere Spielearchitektur.",
     status: "planned" },

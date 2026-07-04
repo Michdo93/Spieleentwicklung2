@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animate/AS3 → HTML5 Game Dev Lab</title>
+<meta name="description" content="Ein Animate/ActionScript-3-Kurs, Übung für Übung nach HTML5 + JavaScript portiert – vom ersten Frame bis zum fertigen Mini-Plattformer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="#uebungen">Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">// ehemals Adobe Animate / ActionScript 3 Kursmaterial</div>
+    <h1>Vom ersten Frame zum fertigen Spiel — Übung für Übung.</h1>
+    <p class="lede">
+      Dieses Repo portiert ein komplettes Animate/AS3-Kursmaterial Schritt für
+      Schritt nach HTML5 und JavaScript. Jede Übung bleibt eigenständig
+      lauffähig und baut auf der vorigen auf — von reiner Frame-Animation über
+      Event-Handling und OOP bis zum fertigen, komponentenbasierten
+      Mini-Plattformer.
+    </p>
+    <div class="hero-progress" id="progress">
+      <span class="bar"><span id="progress-bar" style="width:0%"></span></span>
+      <span id="progress-text">lädt…</span>
+    </div>
+  </div>
+</section>
+
+<main class="wrap" id="uebungen">
+  <div id="chapter-list" class="grid"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    Original-Kursmaterial: Adobe Animate / ActionScript 3 (Übungen 1–9 + Movement).
+    Diese Portierung ersetzt Animate/Flash vollständig durch HTML5 Canvas +
+    Vanilla JS, Übung für Übung. Fortschritt und Quellcode:
+    <a href="https://github.com/Michdo93" target="_blank" rel="noopener">github.com/Michdo93</a>.
+  </div>
+</footer>
+
+<script src="assets/js/exercises-data.js"></script>
+<script>
+  const listEl = document.getElementById("chapter-list");
+
+  CHAPTERS.forEach(c => {
+    const isLive = c.status === "live";
+    const el = document.createElement(isLive ? "a" : "div");
+    el.className = "card" + (isLive ? "" : " disabled");
+    if (isLive) el.href = `exercises/${c.slug}/`;
+    el.innerHTML = `
+      <div class="card-top">
+        <span class="num readout">ÜB·${String(c.num).padStart(2, "0")}</span>
+        <span class="badge ${isLive ? "live" : "planned"}">${isLive ? "Verfügbar" : "Geplant"}</span>
+      </div>
+      <h3>${c.title}</h3>
+      <p>${c.desc}</p>
+    `;
+    listEl.appendChild(el);
+  });
+
+  const total = CHAPTERS.length;
+  const live = CHAPTERS.filter(c => c.status === "live").length;
+  document.getElementById("progress-bar").style.width = `${Math.round(live/total*100)}%`;
+  document.getElementById("progress-text").textContent = `${live} / ${total} Übungen portiert`;
+</script>
+</body>
+</html>

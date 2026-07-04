@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übung 1 · Animation-Grundlagen — Animate/AS3 → HTML5 Game Dev Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand"><span class="dot">&gt;</span> animate-dev-lab <small>Animate/AS3 → HTML5 Portierung</small></div>
+    <nav class="site-nav">
+      <a href="../../index.html">Alle Übungen</a>
+      <a href="https://github.com/Michdo93" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="chapter-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../../index.html">Übungen</a> / Übung 1</div>
+    <span class="readout">ÜB·01</span>
+    <h1>Animation-Grundlagen</h1>
+    <p class="lede" style="color:var(--text-dim); max-width:70ch;">
+      Drei Grundtechniken der Animation in Adobe Animate — und ihre direkten
+      Web-Entsprechungen: Frame-by-Frame, klassisches Tweening, und
+      skriptgesteuerte Zustände. Original: <code>strichmännchen.fla</code>,
+      <code>uebung1.fla</code>, <code>testAnimSkripting.fla</code>.
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="learn-grid">
+
+    <div class="learn-col">
+      <h2>Drei Techniken, drei Web-Entsprechungen</h2>
+      <p>
+        Animate bot historisch drei Wege, etwas zu animieren — und alle drei
+        haben ein Gegenstück im Web:
+      </p>
+      <ul>
+        <li><strong>Frame-by-Frame</strong> — jedes Einzelbild von Hand
+          gezeichnet, keine Berechnung dazwischen. Web-Entsprechung: eine
+          Liste fertiger Zustände/Sprites, per Timer durchgeschaltet.</li>
+        <li><strong>Klassisches Tweening</strong> — nur Start- und Endzustand
+          festlegen, das Programm berechnet den Rest. Web-Entsprechung: eine
+          Interpolationsformel (linear oder mit Easing) über die Zeit.</li>
+        <li><strong>Skriptgesteuerte Animation</strong> — Code entscheidet,
+          welcher benannte Frame/Zustand gerade laufen soll. Web-Entsprechung:
+          eine Zustandsvariable plus <code>requestAnimationFrame</code>.</li>
+      </ul>
+
+      <h2>Frame-by-Frame: keine Zwischenschritte</h2>
+      <p>
+        Das Strichmännchen im Original besteht aus vier von Hand gezeichneten
+        Posen, die im Rhythmus der Bildrate durchgeschaltet werden — genau
+        das macht auch <code>demoFrameByFrame</code>: ein Array von vier
+        Posen, ein <code>setInterval()</code>, das zur nächsten weiterschaltet.
+        Kein Zwischenwert wird berechnet.
+      </p>
+
+      <h2>Tweening: eine Formel für alle Zwischenschritte</h2>
+      <p>
+        Animate interpoliert zwischen zwei Keyframes automatisch — im Web
+        übernimmt das eine kleine Easing-Funktion. Position, Rotation und
+        Skalierung werden alle mit demselben Fortschrittswert <code>t</code>
+        berechnet.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">Animate (visuell, Keyframes)</span>
+          <pre><code>Keyframe 1: x=90,  rot=0°,  scale=0.6
+Keyframe 2: x=470, rot=360°, scale=1.4
+→ Zwischenschritte automatisch
+   von Animate berechnet</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript (Formel)</span>
+          <pre><code>const p = easeInOutQuad(t);
+const x = 90 + p * (470-90);
+const rotation = p * 360;
+const scale = 0.6 + p * 0.8;</code></pre>
+        </div>
+      </div>
+
+      <h2>Skriptgesteuert: das doAction()-Muster</h2>
+      <p>
+        <code>testAnimSkripting.fla</code> führt ein Muster ein, das den
+        <strong>gesamten restlichen Kurs</strong> durchzieht: eine Funktion
+        <code>doAction(label)</code>, die zu einem benannten Zustand
+        wechselt. Später (Übung 3 und danach) wird genau dieses Muster für
+        Lauf-/Steh-/Sprung-Animationen einer Spielfigur wiederverwendet.
+      </p>
+      <div class="compare">
+        <div class="col old">
+          <span class="tag">ActionScript 3</span>
+          <pre><code>function doAction(_action: String) {
+  var nextLabel = "Idle";
+  switch(_action) {
+    case "translate":
+      nextLabel = "Translation";
+      break;
+    // ...
+  }
+  gotoAndPlay(nextLabel);
+}</code></pre>
+        </div>
+        <div class="col new">
+          <span class="tag">JavaScript</span>
+          <pre><code>function doAction(newAction) {
+  action = newAction;
+  t0 = performance.now();
+}
+// im Game-Loop:
+if (action === "translate") { ... }
+else if (action === "rotate") { ... }</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        Zwischen den drei Demos oben wechseln. Bei Demo 3 stehen rechts drei
+        Knöpfe zur Verfügung, um <code>doAction()</code> live auszuprobieren.
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="demo-buttons">
+        <button class="btn ghost btn-active" data-demo="framebyframe">1 · Frame-by-Frame</button>
+        <button class="btn ghost" data-demo="tween">2 · Tweening</button>
+        <button class="btn ghost" data-demo="scripted">3 · doAction()</button>
+      </div>
+      <div class="stage-frame">
+        <canvas id="stage" width="480" height="280"></canvas>
+      </div>
+      <div id="action-buttons">
+        <button id="act-translate" class="btn ghost">translate</button>
+        <button id="act-rotate" class="btn ghost">rotate</button>
+        <button id="act-scale" class="btn ghost">scale</button>
+      </div>
+      <p id="hint" class="controls-hint"></p>
+      <div class="stage-caption">
+        <span>uebung-01-animation-grundlagen/exercise.js</span>
+        <span>480×280</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="chapter-footer-nav wrap">
+  <a href="../../index.html">← Zur Übungsübersicht</a>
+  <a href="../../index.html">Zur Übungsübersicht →</a>
+</div>
+
+<script src="exercise.js"></script>
+</body>
+</html>

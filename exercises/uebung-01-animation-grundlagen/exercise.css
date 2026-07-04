@@ -1,0 +1,17 @@
+.demo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.demo-buttons .btn.ghost.btn-active {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+#hint { margin-top: 10px; }
+
+#action-buttons {
+  display: none;
+  gap: 8px;
+  margin-top: 10px;
+}
